@@ -15,9 +15,13 @@ function App() {
     e.preventDefault();
     const res = await fetch("http://localhost:4000/transation", {
       method: "POST",
-      body: form,
+      body: JSON.stringify(form),
+      headers: {
+        "content-type": "application/json",
+      },
     });
-    console.log(res);
+    const data = await res.json();
+    console.log(data);
   }
 
   return (
@@ -45,6 +49,22 @@ function App() {
         />
         <button type="submit">Submit</button>
       </form>
+
+      <br />
+      <section>
+        <table>
+          <th>Amount</th>
+          <th>Description</th>
+          <th>Date</th>
+          <tbody>
+            <tr>
+              <td>4</td>
+              <td>ghdx</td>
+              <td>nasjkajkt6723</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
     </div>
   );
 }
