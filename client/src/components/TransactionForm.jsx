@@ -1,18 +1,40 @@
-import React from "react";
+import { useState } from "react";
 import { Button, Card, CardContent, Typography } from "@mui/material";
-import dayjs from "dayjs";
 import TextField from "@mui/material/TextField";
-import { Stack } from "@mui/system";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-const TransactionForm = () => {
-  const [value, setValue] = React.useState(dayjs("2014-08-18T21:11:54"));
+const InitialForm = {
+  amount: 0,
+  description: "",
+  date: new Date(),
+};
 
-  const handleChange = (newValue) => {
-    setValue(newValue);
-  };
+const TransactionForm = ({ fetchTransations }) => {
+  const [form, setForm] = useState([]);
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleDate(newValue) {
+    setForm({ ...form, date: newValue });
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const res = await fetch("http://localhost:4000/transation", {
+      method: "POST",
+      body: JSON.stringify(form),
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+    if (res.ok) {
+      setForm(InitialForm);
+      fetchTransations();
+    }
+  }
 
   return (
     <div>
@@ -20,28 +42,36 @@ const TransactionForm = () => {
         <CardContent>
           <Typography variant="h6">Add New Transation</Typography>
 
-          <from>
+          <form onSubmit={handleSubmit}>
             <TextField
               size="small"
               sx={{ marginRight: 5 }}
               id="outlined-basic"
               label="Amount"
+              name="amount"
+              type={"Number"}
               variant="outlined"
+              value={form.amount}
+              onChange={handleChange}
             />
             <TextField
               size="small"
               sx={{ marginRight: 5 }}
               id="outlined-basic"
               label="Description"
+              name="description"
               variant="outlined"
+              value={form.description}
+              onChange={handleChange}
             />
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <MobileDatePicker
                 label="Transation Date"
                 inputFormat="MM/DD/YYYY"
-                value={value}
-                onChange={handleChange}
+                name="date"
+                value={form.date}
+                onChange={handleDate}
                 renderInput={(params) => (
                   <TextField size="small" sx={{ marginRight: 5 }} {...params} />
                 )}
@@ -50,7 +80,7 @@ const TransactionForm = () => {
             <Button variant="contained" type="submit">
               Submit
             </Button>
-          </from>
+          </form>
         </CardContent>
       </Card>
     </div>
