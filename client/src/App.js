@@ -1,11 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ButtonAppBar from "./components/AppBar";
+import TransactionForm from "./components/TransactionForm";
+
+const InitialForm = {
+  amount: 0,
+  description: "",
+  date: "",
+};
 
 function App() {
   const [form, setForm] = useState({
-    amount: 0,
-    description: "",
-    date: "",
+    InitialForm,
   });
+
+  const [transations, setTransations] = useState([]);
+
+  useEffect(() => {
+    fetchTransations();
+  }, []);
+
+  async function fetchTransations() {
+    const res = await fetch("http://localhost:4000/transation");
+    const { data } = await res.json();
+    setTransations(data);
+  }
 
   function handleInput(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -20,12 +38,16 @@ function App() {
         "content-type": "application/json",
       },
     });
-    const data = await res.json();
-    console.log(data);
+    if (res.ok) {
+      setForm(InitialForm);
+      fetchTransations();
+    }
   }
 
   return (
     <div>
+      <ButtonAppBar />
+      <TransactionForm />
       <form onSubmit={handleSubmit}>
         <input
           type="number"
@@ -57,11 +79,13 @@ function App() {
           <th>Description</th>
           <th>Date</th>
           <tbody>
-            <tr>
-              <td>4</td>
-              <td>ghdx</td>
-              <td>nasjkajkt6723</td>
-            </tr>
+            {transations.map((trx) => (
+              <tr key={trx._id}>
+                <td>{trx.amount}</td>
+                <td>{trx.description}</td>
+                <td>{trx.date}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </section>
