@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -9,8 +9,13 @@ import Paper from "@mui/material/Paper";
 import { IconButton, Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import dayjs from "dayjs";
 
-export default function TransactionsList({ transations, fetchTransations }) {
+export default function TransactionsList({
+  transations,
+  fetchTransations,
+  setEditTransations,
+}) {
   async function remove(_id) {
     if (!window.confirm("Are you sure")) return;
     const res = await fetch(`http://localhost:4000/transation/${_id}`, {
@@ -20,6 +25,10 @@ export default function TransactionsList({ transations, fetchTransations }) {
       fetchTransations();
       window.alert("Deleted Successfully");
     }
+  }
+
+  function formatDate(date) {
+    return dayjs(date).format("DD MMM, YYYY");
   }
 
   return (
@@ -47,9 +56,10 @@ export default function TransactionsList({ transations, fetchTransations }) {
                   {row.amount}
                 </TableCell>
                 <TableCell align="center">{row.description}</TableCell>
-                <TableCell align="center">{row.date}</TableCell>
+                <TableCell align="center">{formatDate(row.date)}</TableCell>
                 <TableCell align="center">
                   <IconButton
+                    onClick={() => setEditTransations(row)}
                     color="primary"
                     aria-label="upload picture"
                     component="label"

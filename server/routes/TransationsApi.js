@@ -20,7 +20,12 @@ router.post("/", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-  await Transation.findOneAndDelete({ _id: req.params.id });
+  await Transation.deleteOne({ _id: req.params.id });
+  res.json({ message: "success" });
+});
+
+router.patch("/:id", async (req, res) => {
+  await Transation.updateOne({ _id: req.params.id }, { $set: req.body });
   res.json({ message: "success" });
 });
 

@@ -4,6 +4,7 @@ import TextField from "@mui/material/TextField";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { useEffect } from "react";
 
 const InitialForm = {
   amount: 0,
@@ -11,8 +12,14 @@ const InitialForm = {
   date: new Date(),
 };
 
-const TransactionForm = ({ fetchTransations }) => {
+const TransactionForm = ({ fetchTransations, editTransations }) => {
   const [form, setForm] = useState([]);
+
+  useEffect(() => {
+    if (editTransations.amount !== undefined) setForm(editTransations);
+    console.log(editTransations);
+  }, [editTransations]);
+
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
@@ -23,6 +30,18 @@ const TransactionForm = ({ fetchTransations }) => {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    const res = editTransations.amount === undefined ? create() : update();
+  }
+
+  function reload(res) {
+    if (res.ok) {
+      setForm(InitialForm);
+      fetchTransations();
+    }
+  }
+
+  async function create() {
     const res = await fetch("http://localhost:4000/transation", {
       method: "POST",
       body: JSON.stringify(form),
@@ -30,10 +49,26 @@ const TransactionForm = ({ fetchTransations }) => {
         "content-type": "application/json",
       },
     });
+
+    reload(res);
+  }
+
+  async function update() {
+    const res = await fetch(
+      `http://localhost:4000/transation/${editTransations._id}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(form),
+        headers: {
+          "content-type": "application/json",
+        },
+      }
+    );
     if (res.ok) {
       setForm(InitialForm);
       fetchTransations();
     }
+    return res;
   }
 
   return (
@@ -77,9 +112,16 @@ const TransactionForm = ({ fetchTransations }) => {
                 )}
               />
             </LocalizationProvider>
-            <Button variant="contained" type="submit">
-              Submit
-            </Button>
+            {editTransations.amount !== undefined && (
+              <Button variant="secoundary" type="submit">
+                Update
+              </Button>
+            )}
+            {editTransations.amount === undefined && (
+              <Button variant="contained" type="submit">
+                Submit
+              </Button>
+            )}
           </form>
         </CardContent>
       </Card>
