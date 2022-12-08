@@ -1,12 +1,12 @@
 import { Router } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
 const router = Router();
 
 router.post("/register", async (req, res) => {
-  // get all from data
   const { email, password, firstName, lastName } = req.body;
-  // check if the user exists with the same email
+
   const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(406).json({ message: "User already exists." });
@@ -24,9 +24,32 @@ router.post("/register", async (req, res) => {
     lastName,
   });
   await user.save();
-  // hash the epassword
-  // store user
   res.status(201).json({ message: "user is created" });
+});
+
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    res.status(406).json({ message: "creaditials not found" });
+    return;
+  }
+
+  const matched = await bcrypt.compare(password, user.password);
+  if (!matched) {
+    res.status(406).json({ message: "creaditials not found" });
+    return;
+  }
+
+  // create jwt token
+  const payload = {
+    username: email,
+    _id: user._id,
+  };
+  const token = jwt.sign(payload, "some secret");
+  console.log(token);
+  res.json({ message: "successfully loged in.", token });
 });
 
 export default router;
