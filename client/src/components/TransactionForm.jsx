@@ -17,7 +17,6 @@ const TransactionForm = ({ fetchTransations, editTransations }) => {
 
   useEffect(() => {
     if (editTransations.amount !== undefined) setForm(editTransations);
-    console.log(editTransations);
   }, [editTransations]);
 
   function handleChange(e) {
@@ -30,7 +29,6 @@ const TransactionForm = ({ fetchTransations, editTransations }) => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
     const res = editTransations.amount === undefined ? create() : update();
   }
 

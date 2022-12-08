@@ -1,5 +1,6 @@
 import { Container } from "@mui/system";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import TransactionForm from "../components/TransactionForm";
 import TransactionsList from "../components/TransactionsList";
 
@@ -12,7 +13,12 @@ const Home = () => {
   }, []);
 
   async function fetchTransations() {
-    const res = await fetch("http://localhost:4000/transation");
+    const token = Cookies.get("token");
+    const res = await fetch("http://localhost:4000/transation", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const { data } = await res.json();
     setTransations(data);
   }
