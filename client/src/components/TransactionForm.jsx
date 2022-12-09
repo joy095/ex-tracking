@@ -29,7 +29,7 @@ const TransactionForm = ({ fetchTransations, editTransations }) => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const res = editTransations.amount === undefined ? create() : update();
+    editTransations.amount === undefined ? create() : update();
   }
 
   function reload(res) {
@@ -40,7 +40,7 @@ const TransactionForm = ({ fetchTransations, editTransations }) => {
   }
 
   async function create() {
-    const res = await fetch("http://localhost:4000/transation", {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/transation`, {
       method: "POST",
       body: JSON.stringify(form),
       headers: {
@@ -53,7 +53,7 @@ const TransactionForm = ({ fetchTransations, editTransations }) => {
 
   async function update() {
     const res = await fetch(
-      `http://localhost:4000/transation/${editTransations._id}`,
+      `${process.env.REACT_APP_API_URL}/transation/${editTransations._id}`,
       {
         method: "PATCH",
         body: JSON.stringify(form),

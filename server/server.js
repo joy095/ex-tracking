@@ -2,10 +2,13 @@ import cors from "cors";
 import express from "express";
 import bodyParser from "body-parser";
 import passport from "passport";
+import * as dotenv from "dotenv";
 import connect from "./database/mongodb.js";
 import AuthApi from "./routes/AuthApi.js";
 import TransationsApi from "./routes/TransationsApi.js";
 import passportConfig from "./config/passport.js";
+
+dotenv.config();
 
 const PORT = 4000;
 const app = express();
