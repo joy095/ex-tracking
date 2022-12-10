@@ -4,10 +4,8 @@ import bodyParser from "body-parser";
 import passport from "passport";
 import * as dotenv from "dotenv";
 import connect from "./database/mongodb.js";
-import AuthApi from "./routes/AuthApi.js";
-import UserApi from "./routes/UserApi.js";
-import TransationsApi from "./routes/TransationsApi.js";
 import passportConfig from "./config/passport.js";
+import routes from "./routes/index.js";
 
 dotenv.config();
 
@@ -22,9 +20,7 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.use("/transation", TransationsApi);
-app.use("/auth", AuthApi);
-app.use("/user", UserApi);
+app.use("/", routes);
 
 await connect();
 
